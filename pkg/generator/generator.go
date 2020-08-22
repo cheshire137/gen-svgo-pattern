@@ -34,12 +34,18 @@ func (g *Generator) WriteSvgCode(svgFile *svg.Svg, outFile *os.File) {
 
 func (g *Generator) writeFileHeader(outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("package %s\n\n", g.packageName))
+	g.writeImports(outFile)
+	g.writeTypeDefinition(outFile)
+}
 
+func (g *Generator) writeImports(outFile *os.File) {
 	outFile.WriteString("import (\n")
 	outFile.WriteString(fmt.Sprintf("%s\"fmt\"\n\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%ssvg \"github.com/ajstarks/svgo\"\n", g.tab))
 	outFile.WriteString(")\n\n")
+}
 
+func (g *Generator) writeTypeDefinition(outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("type %s struct {\n", g.typeName))
 	outFile.WriteString(fmt.Sprintf("%sID string\n", g.tab))
 	outFile.WriteString("}\n\n")
