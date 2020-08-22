@@ -16,8 +16,9 @@ Example:
 
 ```
 make && bin/gen-svgo-pattern
+go build -o bin/gen-svgo-pattern gen-svgo-pattern.go
   -h int
-    	Height of pattern in pixels (default 200)
+    	Height of pattern in pixels; leave 0 to use width from input SVG
   -in string
     	Path to an SVG image file, e.g., ~/Pictures/my-pic.svg
   -name string
@@ -29,7 +30,7 @@ make && bin/gen-svgo-pattern
   -tab string
     	Indentation to use in generated Go (default "\t")
   -w int
-    	Width of pattern in pixels (default 200)
+    	Width of pattern in pixels; leave 0 to use width from input SVG
 ```
 
 Here's an example using the Jigsaw pattern from [Hero Patterns](https://www.heropatterns.com):
