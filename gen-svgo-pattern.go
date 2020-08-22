@@ -99,22 +99,30 @@ func main() {
 	outFile.WriteString(fmt.Sprintf("%scanvas.Def()\n", tab))
 	outFile.WriteString(fmt.Sprintf("%scanvas.Pattern(p.ID, 0, 0, pw, ph, \"user\")\n\n", tab))
 
-	for _, group := range svgFile.Groups {
-		if len(group.Fill) > 0 || len(group.Stroke) > 0 {
-			style := fmt.Sprintf("fill:%s;stroke:%s", group.Fill, group.Stroke)
-			outFile.WriteString(fmt.Sprintf("%scanvas.Gstyle(\"%s\")\n", tab, style))
-		} else {
-			outFile.WriteString(fmt.Sprintf("%scanvas.Gid(\"%s\")\n", tab, group.ID))
-		}
+	for _, el := range svgFile.Elements {
+		group, ok := el.(*svg.Group)
+		if ok {
+			if len(group.Fill) > 0 || len(group.Stroke) > 0 {
+				style := fmt.Sprintf("fill:%s;stroke:%s", group.Fill, group.Stroke)
+				outFile.WriteString(fmt.Sprintf("%scanvas.Gstyle(\"%s\")\n", tab, style))
+			} else {
+				outFile.WriteString(fmt.Sprintf("%scanvas.Gid(\"%s\")\n", tab, group.ID))
+			}
 
-		for _, groupEl := range group.Elements {
-			path, ok := groupEl.(*svg.Path)
+			for _, groupEl := range group.Elements {
+				path, ok := groupEl.(*svg.Path)
+				if ok {
+					outFile.WriteString(fmt.Sprintf("%scanvas.Path(\"%s\")\n", tab, path.D))
+				}
+			}
+
+			outFile.WriteString(fmt.Sprintf("%scanvas.Gend()\n\n", tab))
+		} else {
+			path, ok := el.(*svg.Path)
 			if ok {
 				outFile.WriteString(fmt.Sprintf("%scanvas.Path(\"%s\")\n", tab, path.D))
 			}
 		}
-
-		outFile.WriteString(fmt.Sprintf("%scanvas.Gend()\n\n", tab))
 	}
 
 	outFile.WriteString(fmt.Sprintf("%scanvas.PatternEnd()\n", tab))
