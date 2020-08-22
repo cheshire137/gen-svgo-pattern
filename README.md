@@ -4,3 +4,14 @@ Generate Go code using the [svgo library](https://github.com/ajstarks/svgo) from
 SVG image file. The generated code will include an
 [SVG pattern](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Patterns)
 to reproduce the given image.
+
+## How to run
+
+```bash
+make
+bin/gen-svgo-pattern some-svg-file.svg > tmp.go
+```
+
+## Thanks
+
+- [rustyoz/svg](https://github.com/rustyoz/svg)
