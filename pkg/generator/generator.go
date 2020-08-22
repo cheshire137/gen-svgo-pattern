@@ -72,7 +72,13 @@ func (g *Generator) writeDefinePatternFunction(svgFile *svg.Svg, outFile *os.Fil
 	outFile.WriteString(fmt.Sprintf("%sph := %d\n", g.tab, g.height))
 	outFile.WriteString(fmt.Sprintf("%scanvas.Def()\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%scanvas.Pattern(p.ID, 0, 0, pw, ph, \"user\")\n\n", g.tab))
+	g.writeSvgElements(svgFile, outFile)
+	outFile.WriteString(fmt.Sprintf("%scanvas.PatternEnd()\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%scanvas.DefEnd()\n", g.tab))
+	outFile.WriteString("}\n")
+}
 
+func (g *Generator) writeSvgElements(svgFile *svg.Svg, outFile *os.File) {
 	for _, el := range svgFile.Elements {
 		group, ok := el.(*svg.Group)
 		if ok {
@@ -98,8 +104,4 @@ func (g *Generator) writeDefinePatternFunction(svgFile *svg.Svg, outFile *os.Fil
 			}
 		}
 	}
-
-	outFile.WriteString(fmt.Sprintf("%scanvas.PatternEnd()\n", g.tab))
-	outFile.WriteString(fmt.Sprintf("%scanvas.DefEnd()\n", g.tab))
-	outFile.WriteString("}\n")
 }
