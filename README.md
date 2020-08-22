@@ -32,6 +32,14 @@ make && bin/gen-svgo-pattern
     	Width of pattern in pixels (default 200)
 ```
 
+```
+% make && bin/gen-svgo-pattern -w 241 -h 252 -in ~/Pictures/neat-image.svg -name NeatSwirly -out ~/code/go-brocade/pkg/patterns/neat_swirly.go
+go build -o bin/gen-svgo-pattern gen-svgo-pattern.go
+Reading:  /Users/cheshire137/Pictures/neat-image.svg
+Generating Go type NeatSwirly...
+Wrote /Users/cheshire137/code/go-brocade/pkg/patterns/neat_swirly.go
+```
+
 ## Thanks
 
 - [rustyoz/svg](https://github.com/rustyoz/svg)
