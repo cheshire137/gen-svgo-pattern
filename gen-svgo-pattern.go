@@ -28,12 +28,12 @@ func main() {
 		"Name of Go type")
 
 	var width int
-	flag.IntVar(&width, "w", 200,
-		"Width of pattern in pixels")
+	flag.IntVar(&width, "w", 0,
+		"Width of pattern in pixels; leave 0 to use width from input SVG")
 
 	var height int
-	flag.IntVar(&height, "h", 200,
-		"Height of pattern in pixels")
+	flag.IntVar(&height, "h", 0,
+		"Height of pattern in pixels; leave 0 to use width from input SVG")
 
 	var tab string
 	flag.StringVar(&tab, "tab", "\t",

@@ -3,6 +3,7 @@ package generator
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/rustyoz/svg"
 )
@@ -68,14 +69,44 @@ func (g *Generator) writeFillFunction(outFile *os.File) {
 
 func (g *Generator) writeDefinePatternFunction(svgFile *svg.Svg, outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("func (p *%s) DefinePattern(canvas *svg.SVG) {\n", g.typeName))
-	outFile.WriteString(fmt.Sprintf("%spw := %d\n", g.tab, g.width))
-	outFile.WriteString(fmt.Sprintf("%sph := %d\n", g.tab, g.height))
+	width := g.getWidth(svgFile)
+	fmt.Printf("Using width %d\n", width)
+	outFile.WriteString(fmt.Sprintf("%spw := %d\n", g.tab, width))
+	height := g.getHeight(svgFile)
+	fmt.Printf("Using height %d\n", height)
+	outFile.WriteString(fmt.Sprintf("%sph := %d\n", g.tab, height))
 	outFile.WriteString(fmt.Sprintf("%scanvas.Def()\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%scanvas.Pattern(p.ID, 0, 0, pw, ph, \"user\")\n\n", g.tab))
 	g.writeSvgElements(svgFile, outFile)
 	outFile.WriteString(fmt.Sprintf("%scanvas.PatternEnd()\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%scanvas.DefEnd()\n", g.tab))
 	outFile.WriteString("}\n")
+}
+
+func (g *Generator) getWidth(svgFile *svg.Svg) int {
+	if g.width > 0 {
+		return g.width
+	}
+
+	svgWidth, err := strconv.Atoi(svgFile.Width)
+	if err == nil {
+		return svgWidth
+	}
+
+	return 200
+}
+
+func (g *Generator) getHeight(svgFile *svg.Svg) int {
+	if g.height > 0 {
+		return g.height
+	}
+
+	svgHeight, err := strconv.Atoi(svgFile.Height)
+	if err == nil {
+		return svgHeight
+	}
+
+	return 200
 }
 
 func (g *Generator) writeSvgElements(svgFile *svg.Svg, outFile *os.File) {
