@@ -94,10 +94,11 @@ func (g *Generator) writeSvgElements(svgFile *svg.Svg, outFile *os.File) {
 
 func (g *Generator) writeSvgGroup(group *svg.Group, outFile *os.File) {
 	if len(group.Fill) > 0 || len(group.Stroke) > 0 {
-		style := fmt.Sprintf("fill:%s;stroke:%s", group.Fill, group.Stroke)
-		outFile.WriteString(fmt.Sprintf("%scanvas.Gstyle(\"%s\")\n", g.tab, style))
-	} else {
+		g.writeSvgGroupStyle(group, outFile)
+	} else if len(group.ID) > 0 {
 		outFile.WriteString(fmt.Sprintf("%scanvas.Gid(\"%s\")\n", g.tab, group.ID))
+	} else {
+		outFile.WriteString(fmt.Sprintf("%scanvas.Group(\"\")\n", g.tab))
 	}
 
 	for _, groupEl := range group.Elements {
@@ -108,6 +109,18 @@ func (g *Generator) writeSvgGroup(group *svg.Group, outFile *os.File) {
 	}
 
 	outFile.WriteString(fmt.Sprintf("%scanvas.Gend()\n\n", g.tab))
+}
+
+func (g *Generator) writeSvgGroupStyle(group *svg.Group, outFile *os.File) {
+	var style string
+	if len(group.Fill) > 0 && len(group.Stroke) > 0 {
+		style = fmt.Sprintf("fill:%s;stroke:%s", group.Fill, group.Stroke)
+	} else if len(group.Fill) > 0 {
+		style = fmt.Sprintf("fill:%s", group.Fill)
+	} else {
+		style = fmt.Sprintf("stroke:%s", group.Stroke)
+	}
+	outFile.WriteString(fmt.Sprintf("%scanvas.Gstyle(\"%s\")\n", g.tab, style))
 }
 
 func (g *Generator) writeSvgPath(path *svg.Path, outFile *os.File) {
