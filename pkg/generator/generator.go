@@ -26,6 +26,13 @@ func NewGenerator(packageName string, tab string, typeName string, width int, he
 }
 
 func (g *Generator) WriteSvgCode(svgFile *svg.Svg, outFile *os.File) {
+	g.writeFileHeader(outFile)
+	g.writeConstructor(outFile)
+	g.writeFillFunction(outFile)
+	g.writeDefinePatternFunction(svgFile, outFile)
+}
+
+func (g *Generator) writeFileHeader(outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("package %s\n\n", g.packageName))
 
 	outFile.WriteString("import (\n")
@@ -36,18 +43,24 @@ func (g *Generator) WriteSvgCode(svgFile *svg.Svg, outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("type %s struct {\n", g.typeName))
 	outFile.WriteString(fmt.Sprintf("%sID string\n", g.tab))
 	outFile.WriteString("}\n\n")
+}
 
+func (g *Generator) writeConstructor(outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("func New%s() *%s {\n", g.typeName, g.typeName))
 	outFile.WriteString(fmt.Sprintf("%sreturn &%s{\n", g.tab, g.typeName))
 	outFile.WriteString(fmt.Sprintf("%s%sID: \"%s\",\n", g.tab, g.tab, g.typeName))
 	outFile.WriteString(fmt.Sprintf("%s}\n", g.tab))
 	outFile.WriteString("}\n\n")
+}
 
+func (g *Generator) writeFillFunction(outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("func (p *%s) Fill() string {\n", g.typeName))
 	fillStr := "fill:url(#%s)"
 	outFile.WriteString(fmt.Sprintf("%sreturn fmt.Sprintf(\"%s\", p.ID)\n", g.tab, fillStr))
 	outFile.WriteString("}\n\n")
+}
 
+func (g *Generator) writeDefinePatternFunction(svgFile *svg.Svg, outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("func (p *%s) DefinePattern(canvas *svg.SVG) {\n", g.typeName))
 	outFile.WriteString(fmt.Sprintf("%spw := %d\n", g.tab, g.width))
 	outFile.WriteString(fmt.Sprintf("%sph := %d\n", g.tab, g.height))
