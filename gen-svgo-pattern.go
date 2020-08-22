@@ -70,9 +70,8 @@ func main() {
 		return
 	}
 
-	if len(packageName) > 0 {
-		outFile.WriteString(fmt.Sprintf("package %s\n\n", packageName))
-	}
+	fmt.Printf("Generating Go type %s...\n", typeName)
+	outFile.WriteString(fmt.Sprintf("package %s\n\n", packageName))
 
 	outFile.WriteString("import (\n")
 	outFile.WriteString(fmt.Sprintf("%s\"fmt\"\n\n", tab))
@@ -121,4 +120,6 @@ func main() {
 	outFile.WriteString(fmt.Sprintf("%scanvas.PatternEnd()\n", tab))
 	outFile.WriteString(fmt.Sprintf("%scanvas.DefEnd()\n", tab))
 	outFile.WriteString("}\n")
+
+	fmt.Printf("Wrote %s\n", outPath)
 }
