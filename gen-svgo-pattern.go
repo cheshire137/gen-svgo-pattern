@@ -49,6 +49,19 @@ func main() {
 		return
 	}
 
+	outDirInfo, err := os.Stat(outDir)
+	if err != nil {
+		fmt.Println("Could not check out directory: " + err.Error())
+		os.Exit(1)
+		return
+	}
+
+	if !outDirInfo.Mode().IsDir() {
+		fmt.Printf("Error: %s is not a directory\n", outDir)
+		os.Exit(1)
+		return
+	}
+
 	fmt.Println("Reading: ", inPath)
 	buf, err := ioutil.ReadFile(inPath)
 	if err != nil {
