@@ -17,6 +17,8 @@ Example:
 ```
 make && bin/gen-svgo-pattern
 go build -o bin/gen-svgo-pattern gen-svgo-pattern.go
+Usage: bin/gen-svgo-pattern [options]
+
   -h int
     	Height of pattern in pixels; leave 0 to use width from input SVG
   -in string
@@ -24,7 +26,7 @@ go build -o bin/gen-svgo-pattern gen-svgo-pattern.go
   -name string
     	Name of Go type (default "MyPattern")
   -out string
-    	Path where the Go code should be written, e.g., ~/my-go-project/pkg/patterns/my-pattern.go
+    	Directory where the Go code should be written, e.g., ~/my-go-project/pkg/patterns/
   -pkg string
     	Name of Go package for new type (default "patterns")
   -tab string

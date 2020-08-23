@@ -43,6 +43,7 @@ func main() {
 
 	flag.Parse()
 	if len(inPath) < 1 || len(outDir) < 1 {
+		fmt.Printf("Usage: %s [options]\n\n", os.Args[0])
 		flag.PrintDefaults()
 		os.Exit(0)
 		return
