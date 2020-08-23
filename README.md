@@ -8,7 +8,7 @@ to reproduce the given image.
 ## How to run
 
 ```sh
-make && bin/gen-svgo-pattern
+% make && bin/gen-svgo-pattern
 ```
 
 Will display usage instructions:
@@ -42,6 +42,15 @@ Generating Go type Jigsaw...
 Using width 192
 Using height 192
 Wrote /Users/cheshire137/code/go-brocade/pkg/patterns/jigsaw.go
+```
+
+The generated Go type will adhere to this interface:
+
+```go
+type Pattern interface {
+	DefinePattern(width int, height int, canvas *svg.SVG)
+	Style(color string) string
+}
 ```
 
 Sample of the generated Go code:
