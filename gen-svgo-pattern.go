@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/cheshire137/go-brocade/pkg/generator"
+	"github.com/iancoleman/strcase"
 	"github.com/rustyoz/svg"
 )
 
@@ -15,9 +17,9 @@ func main() {
 	flag.StringVar(&inPath, "in", "",
 		"Path to an SVG image file, e.g., ~/Pictures/my-pic.svg")
 
-	var outPath string
-	flag.StringVar(&outPath, "out", "",
-		"Path where the Go code should be written, e.g., ~/my-go-project/pkg/patterns/my-pattern.go")
+	var outDir string
+	flag.StringVar(&outDir, "out", "",
+		"Directory where the Go code should be written, e.g., ~/my-go-project/pkg/patterns/")
 
 	var packageName string
 	flag.StringVar(&packageName, "pkg", "patterns",
@@ -40,7 +42,7 @@ func main() {
 		"Indentation to use in generated Go")
 
 	flag.Parse()
-	if len(inPath) < 1 || len(outPath) < 1 {
+	if len(inPath) < 1 || len(outDir) < 1 {
 		flag.PrintDefaults()
 		os.Exit(0)
 		return
@@ -64,6 +66,8 @@ func main() {
 		return
 	}
 
+	outFilename := fmt.Sprintf("%s.go", strcase.ToSnake(typeName))
+	outPath := filepath.Join(outDir, outFilename)
 	outFile, err := os.Create(outPath)
 	if err != nil {
 		fmt.Println("Could not create Go file: " + err.Error())
