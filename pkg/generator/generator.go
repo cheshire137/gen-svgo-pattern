@@ -91,7 +91,7 @@ func (g *Generator) writeDefinePatternFunction(svgFile *svg.Svg, outFile *os.Fil
 }
 
 func (g *Generator) writeStyleFunction(outFile *os.File) {
-	outFile.WriteString("func (p *Jupiter) Style(color string) string {\n")
+	outFile.WriteString(fmt.Sprintf("func (p *%s) Style(color string) string {\n", g.typeName))
 	styleStr := "mask:url(#%s);fill:%s"
 	outFile.WriteString(fmt.Sprintf("%sreturn fmt.Sprintf(\"%s\", p.maskID, color)\n", g.tab, styleStr))
 	outFile.WriteString("}\n")
