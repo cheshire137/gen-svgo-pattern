@@ -35,10 +35,12 @@ Usage: bin/gen-svgo-pattern [options]
 Here's an example using the Jigsaw pattern from [Hero Patterns](https://www.heropatterns.com):
 
 ```sh
-% make && bin/gen-svgo-pattern -w 192 -h 192 -in ~/Downloads/jigsaw.svg -name Jigsaw -out ~/code/go-brocade/pkg/patterns/jigsaw.go
+% make && bin/gen-svgo-pattern -in ~/Downloads/jigsaw.svg -name Jigsaw -out ~/code/go-brocade/pkg/patterns/
 go build -o bin/gen-svgo-pattern gen-svgo-pattern.go
 Reading:  /Users/cheshire137/Downloads/jigsaw.svg
 Generating Go type Jigsaw...
+Using width 192
+Using height 192
 Wrote /Users/cheshire137/code/go-brocade/pkg/patterns/jigsaw.go
 ```
 
