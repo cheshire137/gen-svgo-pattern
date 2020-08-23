@@ -7,16 +7,13 @@ to reproduce the given image.
 
 ## How to run
 
-```bash
-make
-bin/gen-svgo-pattern -w [WIDTH] -h [HEIGHT] -in [PATH_TO_SVG.svg] -name [NAME_OF_GO_TYPE] -out [PATH_TO_GO_FILE.go] -tab [INDENTATION_CHARACTERS]
-```
-
-Example:
-
-```
+```sh
 make && bin/gen-svgo-pattern
-go build -o bin/gen-svgo-pattern gen-svgo-pattern.go
+```
+
+Will display usage instructions:
+
+```
 Usage: bin/gen-svgo-pattern [options]
 
   -h int
@@ -37,7 +34,7 @@ Usage: bin/gen-svgo-pattern [options]
 
 Here's an example using the Jigsaw pattern from [Hero Patterns](https://www.heropatterns.com):
 
-```
+```sh
 % make && bin/gen-svgo-pattern -w 192 -h 192 -in ~/Downloads/jigsaw.svg -name Jigsaw -out ~/code/go-brocade/pkg/patterns/jigsaw.go
 go build -o bin/gen-svgo-pattern gen-svgo-pattern.go
 Reading:  /Users/cheshire137/Downloads/jigsaw.svg
