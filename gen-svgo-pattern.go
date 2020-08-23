@@ -70,10 +70,9 @@ func main() {
 		return
 	}
 
-	svgStr := string(buf)
 	var scalefloat float64
 	scalefloat = 1.0
-	svgFile, err := svg.ParseSvg(svgStr, inPath, scalefloat)
+	svgFile, err := svg.ParseSvg(string(buf), inPath, scalefloat)
 	if err != nil {
 		fmt.Println("Could not parse SVG: " + err.Error())
 		os.Exit(1)

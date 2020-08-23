@@ -27,10 +27,16 @@ func NewGenerator(packageName string, tab string, typeName string, width int, he
 }
 
 func (g *Generator) WriteSvgCode(svgFile *svg.Svg, outFile *os.File) {
+	patternWidth := g.getWidth(svgFile)
+	fmt.Printf("Using width %d\n", patternWidth)
+
+	patternHeight := g.getHeight(svgFile)
+	fmt.Printf("Using height %d\n", patternHeight)
+
 	g.writeFileHeader(outFile)
-	g.writeConstructor(outFile)
-	g.writeFillFunction(outFile)
+	g.writeConstructor(patternWidth, patternHeight, outFile)
 	g.writeDefinePatternFunction(svgFile, outFile)
+	g.writeStyleFunction(outFile)
 }
 
 func (g *Generator) writeFileHeader(outFile *os.File) {
@@ -48,42 +54,46 @@ func (g *Generator) writeImports(outFile *os.File) {
 
 func (g *Generator) writeTypeDefinition(outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("type %s struct {\n", g.typeName))
-	outFile.WriteString(fmt.Sprintf("%sID string\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%sID            string\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%smaskID        string\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%spatternWidth  int\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%spatternHeight int\n", g.tab))
 	outFile.WriteString("}\n\n")
 }
 
-func (g *Generator) writeConstructor(outFile *os.File) {
+func (g *Generator) writeConstructor(patternWidth int, patternHeight int, outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("func New%s() *%s {\n", g.typeName, g.typeName))
 	outFile.WriteString(fmt.Sprintf("%sreturn &%s{\n", g.tab, g.typeName))
-	outFile.WriteString(fmt.Sprintf("%s%sID: \"%s\",\n", g.tab, g.tab, g.typeName))
+	outFile.WriteString(fmt.Sprintf("%s%sID:            \"%s\",\n", g.tab, g.tab, g.typeName))
+	outFile.WriteString(fmt.Sprintf("%s%smaskID:        \"%s-mask\",\n", g.tab, g.tab, g.typeName))
+	outFile.WriteString(fmt.Sprintf("%s%spatternWidth:  %d,\n", g.tab, g.tab, patternWidth))
+	outFile.WriteString(fmt.Sprintf("%s%spatternHeight: %d,\n", g.tab, g.tab, patternHeight))
 	outFile.WriteString(fmt.Sprintf("%s}\n", g.tab))
 	outFile.WriteString("}\n\n")
 }
 
-func (g *Generator) writeFillFunction(outFile *os.File) {
-	outFile.WriteString(fmt.Sprintf("func (p *%s) Fill() string {\n", g.typeName))
-	fillStr := "fill:url(#%s)"
-	outFile.WriteString(fmt.Sprintf("%sreturn fmt.Sprintf(\"%s\", p.ID)\n", g.tab, fillStr))
-	outFile.WriteString("}\n\n")
-}
-
 func (g *Generator) writeDefinePatternFunction(svgFile *svg.Svg, outFile *os.File) {
-	outFile.WriteString(fmt.Sprintf("func (p *%s) DefinePattern(canvas *svg.SVG) {\n", g.typeName))
-	width := g.getWidth(svgFile)
-	fmt.Printf("Using width %d\n", width)
-	outFile.WriteString(fmt.Sprintf("%spw := %d\n", g.tab, width))
-	height := g.getHeight(svgFile)
-	fmt.Printf("Using height %d\n", height)
-	outFile.WriteString(fmt.Sprintf("%sph := %d\n", g.tab, height))
+	outFile.WriteString(fmt.Sprintf("func (p *%s) DefinePattern(width int, height int, canvas *svg.SVG) {\n", g.typeName))
 	outFile.WriteString(fmt.Sprintf("%scanvas.Def()\n", g.tab))
-	outFile.WriteString(fmt.Sprintf("%scanvas.Pattern(p.ID, 0, 0, pw, ph, \"user\")\n\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%scanvas.Pattern(p.ID, 0, 0, p.patternWidth, p.patternHeight, \"user\", \"stroke:white;stroke-linecap:square;stroke-width:1\")\n\n", g.tab))
 	if len(svgFile.Elements) > 0 {
 		g.writeSvgElements(svgFile, outFile)
 	} else if len(svgFile.Groups) > 0 {
 		g.writeSvgGroups(svgFile, outFile)
 	}
-	outFile.WriteString(fmt.Sprintf("%scanvas.PatternEnd()\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%scanvas.PatternEnd()\n\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%scanvas.Mask(p.maskID, 0, 0, width, height)\n", g.tab))
+	fillStr := "fill:url(#%s)"
+	outFile.WriteString(fmt.Sprintf("%scanvas.Rect(0, 0, width, height, fmt.Sprintf(\"%s\", p.ID))\n", g.tab, fillStr))
+	outFile.WriteString(fmt.Sprintf("%scanvas.MaskEnd()\n\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%scanvas.DefEnd()\n", g.tab))
+	outFile.WriteString("}\n\n")
+}
+
+func (g *Generator) writeStyleFunction(outFile *os.File) {
+	outFile.WriteString("func (p *Jupiter) Style(color string) string {\n")
+	styleStr := "mask:url(#%s);fill:%s"
+	outFile.WriteString(fmt.Sprintf("%sreturn fmt.Sprintf(\"%s\", p.maskID, color)\n", g.tab, styleStr))
 	outFile.WriteString("}\n")
 }
 
