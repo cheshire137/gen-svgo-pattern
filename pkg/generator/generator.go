@@ -163,6 +163,11 @@ func (g *Generator) writeSvgGroup(group *svg.Group, outFile *os.File) {
 		path, ok := groupEl.(*svg.Path)
 		if ok {
 			g.writeSvgPath(path, outFile)
+		} else {
+			nestedGroup, ok := groupEl.(*svg.Group)
+			if ok {
+				g.writeSvgGroup(nestedGroup, outFile)
+			}
 		}
 	}
 
