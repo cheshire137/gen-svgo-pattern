@@ -48,6 +48,7 @@ The generated Go type will adhere to this interface:
 
 ```go
 type Pattern interface {
+	Name() string
 	DefinePattern(width int, height int, canvas *svg.SVG)
 	Style(color string, offsetX int, offsetY int) string
 }

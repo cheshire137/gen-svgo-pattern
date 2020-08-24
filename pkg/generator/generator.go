@@ -35,6 +35,7 @@ func (g *Generator) WriteSvgCode(svgFile *svg.Svg, outFile *os.File) {
 
 	g.writeFileHeader(outFile)
 	g.writeConstructor(patternWidth, patternHeight, outFile)
+	g.writeNameFunction(outFile)
 	g.writeDefinePatternFunction(svgFile, outFile)
 	g.writeStyleFunction(outFile)
 }
@@ -54,7 +55,7 @@ func (g *Generator) writeImports(outFile *os.File) {
 
 func (g *Generator) writeTypeDefinition(outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("type %s struct {\n", g.typeName))
-	outFile.WriteString(fmt.Sprintf("%sID            string\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%sname          string\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%smaskID        string\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%spatternWidth  int\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%spatternHeight int\n", g.tab))
@@ -64,7 +65,7 @@ func (g *Generator) writeTypeDefinition(outFile *os.File) {
 func (g *Generator) writeConstructor(patternWidth int, patternHeight int, outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("func New%s() *%s {\n", g.typeName, g.typeName))
 	outFile.WriteString(fmt.Sprintf("%sreturn &%s{\n", g.tab, g.typeName))
-	outFile.WriteString(fmt.Sprintf("%s%sID:            \"%s\",\n", g.tab, g.tab, g.typeName))
+	outFile.WriteString(fmt.Sprintf("%s%sname:          \"%s\",\n", g.tab, g.tab, g.typeName))
 	outFile.WriteString(fmt.Sprintf("%s%smaskID:        \"%s-mask\",\n", g.tab, g.tab, g.typeName))
 	outFile.WriteString(fmt.Sprintf("%s%spatternWidth:  %d,\n", g.tab, g.tab, patternWidth))
 	outFile.WriteString(fmt.Sprintf("%s%spatternHeight: %d,\n", g.tab, g.tab, patternHeight))
@@ -72,10 +73,16 @@ func (g *Generator) writeConstructor(patternWidth int, patternHeight int, outFil
 	outFile.WriteString("}\n\n")
 }
 
+func (g *Generator) writeNameFunction(outFile *os.File) {
+	outFile.WriteString(fmt.Sprintf("func (p *%s) Name() string {\n", g.typeName))
+	outFile.WriteString(fmt.Sprintf("%sreturn p.name\n", g.tab))
+	outFile.WriteString("}\n\n")
+}
+
 func (g *Generator) writeDefinePatternFunction(svgFile *svg.Svg, outFile *os.File) {
 	outFile.WriteString(fmt.Sprintf("func (p *%s) DefinePattern(width int, height int, canvas *svg.SVG) {\n", g.typeName))
 	outFile.WriteString(fmt.Sprintf("%scanvas.Def()\n", g.tab))
-	outFile.WriteString(fmt.Sprintf("%scanvas.Pattern(p.ID, 0, 0, p.patternWidth, p.patternHeight, \"user\", \"stroke:white;stroke-linecap:square;stroke-width:1\")\n\n", g.tab))
+	outFile.WriteString(fmt.Sprintf("%scanvas.Pattern(p.name, 0, 0, p.patternWidth, p.patternHeight, \"user\", \"stroke:white;stroke-linecap:square;stroke-width:1\")\n\n", g.tab))
 	if len(svgFile.Elements) > 0 {
 		g.writeSvgElements(svgFile, outFile)
 	} else if len(svgFile.Groups) > 0 {
@@ -84,7 +91,7 @@ func (g *Generator) writeDefinePatternFunction(svgFile *svg.Svg, outFile *os.Fil
 	outFile.WriteString(fmt.Sprintf("%scanvas.PatternEnd()\n\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%scanvas.Mask(p.maskID, 0, 0, width, height)\n", g.tab))
 	fillStr := "fill:url(#%s)"
-	outFile.WriteString(fmt.Sprintf("%scanvas.Rect(0, 0, width, height, fmt.Sprintf(\"%s\", p.ID))\n", g.tab, fillStr))
+	outFile.WriteString(fmt.Sprintf("%scanvas.Rect(0, 0, width, height, fmt.Sprintf(\"%s\", p.name))\n", g.tab, fillStr))
 	outFile.WriteString(fmt.Sprintf("%scanvas.MaskEnd()\n\n", g.tab))
 	outFile.WriteString(fmt.Sprintf("%scanvas.DefEnd()\n", g.tab))
 	outFile.WriteString("}\n\n")
